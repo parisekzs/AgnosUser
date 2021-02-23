@@ -75,13 +75,13 @@ public class AgnosUser {
         return new StringBuilder()
                 .append("password:")
                 .append(StringUtils.hasText(this.encodedPassword) ? this.encodedPassword : "")
-                .append("firsName:")
+                .append(" ,firsName:")
                 .append(StringUtils.hasText(this.firstName) ? this.firstName : "")
-                .append("lastName:")
+                .append(" ,lastName:")
                 .append(StringUtils.hasText(this.lastName) ? this.lastName : "")
-                .append("email:")
+                .append(" ,email:")
                 .append(StringUtils.hasText(this.email) ? this.email : "")
-                .append("isEnabled:")
+                .append(" ,isEnabled:")
                 .append(this.enabled)
                 .toString();
     }
