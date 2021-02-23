@@ -62,6 +62,11 @@ public class AgnosUser {
     public void addRole(AgnosRole role){
         this.roles.add(role);
     }
+    
+    public void removeRole(AgnosRole role){
+        this.roles.remove(role);
+    }
+    
     public boolean hasRole(String roleName){
         boolean result = false;
         for(AgnosRole role : this.roles){

@@ -171,8 +171,16 @@ public class PropertiesAgnosUserRepository {
     }
     
     public void addRole(AgnosUser user, AgnosRole role){
-        if(!user.hasRole(path)){
+        if(!user.hasRole(role.getName())){
             user.addRole(role);
+            PropertiesAgnosRoleRepository agnosRoleRelpo = new PropertiesAgnosRoleRepository(path);
+            agnosRoleRelpo.saveUserRoles(user.getName(), user.getUserRolesAsString());
+        }
+    }
+    
+    public void removeRole(AgnosUser user, AgnosRole role){
+        if(user.hasRole(role.getName())){
+            user.removeRole(role);
             PropertiesAgnosRoleRepository agnosRoleRelpo = new PropertiesAgnosRoleRepository(path);
             agnosRoleRelpo.saveUserRoles(user.getName(), user.getUserRolesAsString());
         }
