@@ -145,7 +145,25 @@ public class PropertiesAgnosUserRepository {
             // save properties to project root folder
             prop.store(output, null);
 
-            System.out.println(prop);
+//            System.out.println(prop);
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+    
+    public void removeUserAttributes(String userName) {
+
+        try (OutputStream output = new FileOutputStream(uri)) {
+
+            Properties prop = new Properties();
+            // set the properties value
+            prop.remove(userName);
+
+            // save properties to project root folder
+            prop.store(output, null);
+
+//            System.out.println(prop);
 
         } catch (IOException io) {
             io.printStackTrace();

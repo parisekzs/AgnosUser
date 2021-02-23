@@ -126,4 +126,22 @@ public class PropertiesAgnosRoleRepository {
             io.printStackTrace();
         }
     }
+    public void removeUserRoles(String userName) {
+
+        try (OutputStream output = new FileOutputStream(uri)) {
+
+            Properties prop = new Properties();
+            // set the properties value
+            prop.remove(userName);
+
+            // save properties to project root folder
+            prop.store(output, null);
+
+//            System.out.println(prop);
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+    
 }
