@@ -5,6 +5,7 @@
  */
 package hu.mi.agnos.user.repository;
 
+import hu.mi.agnos.user.model.AgnosRole;
 import hu.mi.agnos.user.model.AgnosUser;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -37,7 +38,6 @@ public class PropertiesAgnosUserRepository {
         }
 
     }
-
     
     public Set<AgnosUser> findAll() {
         Set<AgnosUser> result = new HashSet<>();
@@ -170,4 +170,11 @@ public class PropertiesAgnosUserRepository {
         }
     }
     
+    public void addRole(AgnosUser user, AgnosRole role){
+        if(!user.hasRole(path)){
+            user.addRole(role);
+            PropertiesAgnosRoleRepository agnosRoleRelpo = new PropertiesAgnosRoleRepository(path);
+            agnosRoleRelpo.saveUserRoles(user.getName(), user.getUserRolesAsString());
+        }
+    }
 }

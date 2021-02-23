@@ -59,6 +59,9 @@ public class AgnosUser {
         return true;
     }
     
+    public void addRole(AgnosRole role){
+        this.roles.add(role);
+    }
     public boolean hasRole(String roleName){
         boolean result = false;
         for(AgnosRole role : this.roles){
