@@ -58,6 +58,17 @@ public class AgnosUser {
         }
         return true;
     }
+    
+    public boolean hasRole(String roleName){
+        boolean result = false;
+        for(AgnosRole role : this.roles){
+            if(role.getName().equals(roleName)){
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
 
     public String getUserRolesAsString() {
         StringBuilder result = new StringBuilder();
