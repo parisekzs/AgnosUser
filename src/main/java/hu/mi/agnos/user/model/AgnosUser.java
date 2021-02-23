@@ -82,7 +82,7 @@ public class AgnosUser {
         return result.toString();
     }
 
-    public String getUsetAttributesAsString() {
+    public String getUserAttributesAsString() {
         return new StringBuilder()
                 .append("password:")
                 .append(StringUtils.hasText(this.encodedPassword) ? this.encodedPassword : "")
