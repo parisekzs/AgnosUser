@@ -58,19 +58,19 @@ public class AgnosUser {
         }
         return true;
     }
-    
-    public void addRole(AgnosRole role){
+
+    public void addRole(AgnosRole role) {
         this.roles.add(role);
     }
-    
-    public void removeRole(AgnosRole role){
+
+    public void removeRole(AgnosRole role) {
         this.roles.remove(role);
     }
-    
-    public boolean hasRole(String roleName){
+
+    public boolean hasRole(String roleName) {
         boolean result = false;
-        for(AgnosRole role : this.roles){
-            if(role.getName().equals(roleName)){
+        for (AgnosRole role : this.roles) {
+            if (role.getName().equals(roleName)) {
                 result = true;
                 break;
             }
@@ -103,6 +103,16 @@ public class AgnosUser {
                 .append(" ,isEnabled:")
                 .append(this.enabled)
                 .toString();
+    }
+
+    public String getRoleNamesString() {
+        String result = "";
+        String separator = "";
+        for (AgnosRole role : this.roles) {
+            result = result + separator + role.getName();
+            separator = ", ";
+        }
+        return result;
     }
 
     @Override

@@ -38,13 +38,13 @@ public class PropertiesAgnosUserRepository {
         }
 
     }
-    
+
     public Set<AgnosUser> findAll() {
         Set<AgnosUser> result = new HashSet<>();
         try (BufferedReader br = new BufferedReader(new FileReader(uri))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (!line.startsWith("#")) {
+                if (line.length() > 0 && !line.startsWith("#")) {
                     String name = line.substring(0, line.indexOf('='));
                     String content = line.substring(line.indexOf('=') + 1);
                     AgnosUser user = new AgnosUser(name);
@@ -52,20 +52,21 @@ public class PropertiesAgnosUserRepository {
                         String[] segment = s.split(":");
                         String key = segment[0].trim();
                         switch (key) {
-                            case "password":
-                                user.setEncodedPassword(segment[1].trim());
+                            case "password":                                
+                                user.setEncodedPassword(segment.length == 2 ? segment[1].trim() : "");
                                 break;
                             case "firsName":
-                                user.setFirstName(segment[1].trim());
+                                user.setFirstName(segment.length == 2 ? segment[1].trim() : "");
                                 break;
                             case "lastName":
-                                user.setLastName(segment[1].trim());
+                                user.setLastName(segment.length == 2 ? segment[1].trim() : "");
                                 break;
                             case "email":
-                                user.setEmail(segment[1].trim());
+                                user.setEmail(segment.length == 2 ? segment[1].trim() : "");
                                 break;
                             case "isEnabled":
-                                if (segment[1].trim().toUpperCase().equals("TRUE")) {
+                                if (segment.length == 2 &&
+                                        segment[1].trim().toUpperCase().equals("TRUE")) {
                                     user.setEnabled(true);
                                 }
                                 break;
@@ -146,12 +147,11 @@ public class PropertiesAgnosUserRepository {
             prop.store(output, null);
 
 //            System.out.println(prop);
-
         } catch (IOException io) {
             io.printStackTrace();
         }
     }
-    
+
     public void removeUserAttributes(String userName) {
 
         try (OutputStream output = new FileOutputStream(uri)) {
@@ -164,22 +164,21 @@ public class PropertiesAgnosUserRepository {
             prop.store(output, null);
 
 //            System.out.println(prop);
-
         } catch (IOException io) {
             io.printStackTrace();
         }
     }
-    
-    public void addRole(AgnosUser user, AgnosRole role){
-        if(!user.hasRole(role.getName())){
+
+    public void addRole(AgnosUser user, AgnosRole role) {
+        if (!user.hasRole(role.getName())) {
             user.addRole(role);
             PropertiesAgnosRoleRepository agnosRoleRelpo = new PropertiesAgnosRoleRepository(path);
             agnosRoleRelpo.saveUserRoles(user.getName(), user.getUserRolesAsString());
         }
     }
-    
-    public void removeRole(AgnosUser user, AgnosRole role){
-        if(user.hasRole(role.getName())){
+
+    public void removeRole(AgnosUser user, AgnosRole role) {
+        if (user.hasRole(role.getName())) {
             user.removeRole(role);
             PropertiesAgnosRoleRepository agnosRoleRelpo = new PropertiesAgnosRoleRepository(path);
             agnosRoleRelpo.saveUserRoles(user.getName(), user.getUserRolesAsString());
