@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hu.mi.agnos.user.entity.AbstractEntity;
+import hu.mi.agnos.user.entity.AbstractDAOEntity;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,24 +22,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-public abstract class PropertyRepository<T extends AbstractEntity, ID extends Serializable> implements IPropertyRepository<T, ID> {
+public abstract class PropertyRepository<T extends AbstractDAOEntity, ID extends Serializable> implements IPropertyRepository<T, ID> {
 
     protected static final String ID_MUST_NOT_BE_NULL = "The given id must not be null!";
-    private Class<T> entityClass;
     protected final Logger logger;
 
     protected String uri;
+    protected final String path;
 
-    public PropertyRepository() {
-        super();
-        logger = LoggerFactory.getLogger(this.getClass());
+    private Class<T> entityClass;
+            
+    public PropertyRepository(Class<T> entityClass, String path) {
+        this.entityClass = entityClass;
+        logger = LoggerFactory.getLogger(entityClass);
+        this.path = new StringBuilder(path)
+                .append(path.endsWith("/") ? "" : "/")
+                .toString();
+        init();
     }
 
-    public abstract void setURI(String path);
+    @PostConstruct
+    protected abstract void init();
 
     @Override
     public Optional<T> deleteById(ID id) {

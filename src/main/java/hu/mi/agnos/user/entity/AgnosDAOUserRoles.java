@@ -12,16 +12,16 @@ import java.util.ArrayList;
  *
  * @author parisek
  */
-public class AgnosUserRoles extends AbstractEntity{
+public class AgnosDAOUserRoles extends AbstractDAOEntity{
 
     private String name;
     private ArrayList<String> roles;
 
-    public AgnosUserRoles() {
+    public AgnosDAOUserRoles() {
     }
 
     
-    public AgnosUserRoles(AgnosUser user) {
+    public AgnosDAOUserRoles(AgnosDAOUser user) {
         this.roles = user.getRoles();
         this.name = user.getName();
     }

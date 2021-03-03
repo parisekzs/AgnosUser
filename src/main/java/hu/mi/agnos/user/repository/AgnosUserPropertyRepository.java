@@ -8,8 +8,8 @@ package hu.mi.agnos.user.repository;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hu.mi.agnos.user.entity.AgnosUser;
-import hu.mi.agnos.user.entity.AgnosUserRoles;
+import hu.mi.agnos.user.entity.AgnosDAOUser;
+import hu.mi.agnos.user.entity.AgnosDAOUserRoles;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,28 +20,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import javax.annotation.PostConstruct;
 import org.springframework.util.Assert;
 
 /**
  *
  * @author parisek
  */
-public class AgnosUserPropertyRepository extends PropertyRepository<AgnosUser, String> {
+public class AgnosUserPropertyRepository extends PropertyRepository<AgnosDAOUser, String> {
 
-    private String path;
+    public AgnosUserPropertyRepository(String path) {
+        super(AgnosDAOUser.class, path);
+    }
 
+    @PostConstruct
     @Override
-    public void setURI(String path) {
-        this.path = path;
-        this.uri = new StringBuilder(path)
-                .append(path.endsWith("/") ? "" : "/")
+    protected void init() {
+        
+        this.uri = new StringBuilder(this.path)
+                .append("application-users.properties")
+                .toString();
+        super.uri = new StringBuilder(this.path)
                 .append("application-users.properties")
                 .toString();
     }
 
     @Override
-    public List<AgnosUser> findAll() {
-        List<AgnosUser> result = new ArrayList<>();
+    public List<AgnosDAOUser> findAll() {
+        List<AgnosDAOUser> result = new ArrayList<>();
         try (FileInputStream input = new FileInputStream(this.uri)) {
             Properties prop = new Properties();
             // load a properties file
@@ -50,10 +56,9 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosUser, S
 
                 String valueString = prop.getProperty((String) userName);
                 if (valueString != null) {
-                    AgnosUser user = parseEntityFromJSONString((String) userName, valueString);
-                    AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository();
-                    userRolesRepository.setURI(path);
-                    Optional<AgnosUserRoles> userRoles = userRolesRepository.findById((String) userName);
+                    AgnosDAOUser user = parseEntityFromJSONString((String) userName, valueString);
+                    AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository(this.path);
+                    Optional<AgnosDAOUserRoles> userRoles = userRolesRepository.findById((String) userName);
                     if (userRoles.isPresent()) {
                         user.setRoles(userRoles.get().getRoles());
                     }
@@ -67,20 +72,19 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosUser, S
     }
 
     @Override
-    public Optional<AgnosUser> findById(String userName) {
+    public Optional<AgnosDAOUser> findById(String userName) {
         Assert.notNull(userName, ID_MUST_NOT_BE_NULL);
 
         try (FileInputStream input = new FileInputStream(this.uri)) {
-            AgnosUser result = null;
+            AgnosDAOUser result = null;
             Properties prop = new Properties();
             // load a properties file
             prop.load(new InputStreamReader(input, Charset.forName("UTF-8")));
             String valueString = prop.getProperty(userName);
             if (valueString != null) {
                 result = parseEntityFromJSONString(userName, valueString);
-                AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository();
-                userRolesRepository.setURI(path);
-                Optional<AgnosUserRoles> userRoles = userRolesRepository.findById(userName);
+                AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository(path);
+                Optional<AgnosDAOUserRoles> userRoles = userRolesRepository.findById(userName);
                 if (userRoles.isPresent()) {
                     result.setRoles(userRoles.get().getRoles());
                 }
@@ -93,7 +97,7 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosUser, S
     }
 
     @Override
-    public Optional<AgnosUser> save(AgnosUser user) {
+    public Optional<AgnosDAOUser> save(AgnosDAOUser user) {
         Assert.notNull(user, "Entity must not be null.");
         try (OutputStream output = new FileOutputStream(uri)) {
             ObjectMapper mapper = new ObjectMapper();
@@ -110,10 +114,9 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosUser, S
             logger.error(io.getMessage());
             return Optional.empty();
         }
-        AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository();
-        userRolesRepository.setURI(path);
+        AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository(path);
         return userRolesRepository
-                .save(new AgnosUserRoles(user))
+                .save(new AgnosDAOUserRoles(user))
                 .isPresent()
                         ? Optional.ofNullable(user)
                         : Optional.empty();
@@ -121,8 +124,8 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosUser, S
     }
 
     @Override
-    public Optional<AgnosUser> deleteById(String userName) {
-        Optional<AgnosUser> deleted = findById(userName);
+    public Optional<AgnosDAOUser> deleteById(String userName) {
+        Optional<AgnosDAOUser> deleted = findById(userName);
 
         if (deleted.isPresent()) {
             try (OutputStream output = new FileOutputStream(uri)) {
@@ -139,14 +142,12 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosUser, S
                 return Optional.empty();
             }
         }
-        AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository();
-        userRolesRepository.setURI(path);
+        AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository(path);
         return userRolesRepository
                 .deleteById(userName)
                 .isPresent()
                         ? deleted
                         : Optional.empty();
     }
-
 
 }

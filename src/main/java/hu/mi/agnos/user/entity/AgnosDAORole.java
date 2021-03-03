@@ -7,21 +7,23 @@ package hu.mi.agnos.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
 
 /**
  *
  * @author parisek
  */
-public class AgnosRole extends AbstractEntity {
+@AllArgsConstructor
+public class AgnosDAORole extends AbstractDAOEntity {
 
     private String name;
     private boolean permanent;
     private String description;
 
-    public AgnosRole() {
+    public AgnosDAORole() {
     }
 
-    public AgnosRole(String name) {
+    public AgnosDAORole(String name) {
         this.name = name;
     }
 
@@ -69,7 +71,7 @@ public class AgnosRole extends AbstractEntity {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final AgnosRole other = (AgnosRole) obj;
+        final AgnosDAORole other = (AgnosDAORole) obj;
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }

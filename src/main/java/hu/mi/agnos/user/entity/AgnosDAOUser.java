@@ -9,13 +9,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  *
  * @author parisek
  */
-public class AgnosUser extends AbstractEntity{
+@AllArgsConstructor
+public class AgnosDAOUser extends AbstractDAOEntity{
 
    private String name;
     private String email;
@@ -24,7 +26,7 @@ public class AgnosUser extends AbstractEntity{
     private ArrayList<String> roles;
     private boolean permanent;
 
-    public AgnosUser() {
+    public AgnosDAOUser() {
         this.roles = new ArrayList<>();
     }
     
@@ -152,7 +154,7 @@ public class AgnosUser extends AbstractEntity{
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final AgnosUser other = (AgnosUser) obj;
+        final AgnosDAOUser other = (AgnosDAOUser) obj;
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }

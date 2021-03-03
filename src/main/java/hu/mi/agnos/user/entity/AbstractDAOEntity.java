@@ -9,7 +9,7 @@ package hu.mi.agnos.user.entity;
  *
  * @author parisek
  */
-public abstract class AbstractEntity {
+public abstract class AbstractDAOEntity {
     public abstract void setName(String name);
     public abstract String getName();
 }

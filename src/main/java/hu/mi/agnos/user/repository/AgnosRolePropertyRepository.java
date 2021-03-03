@@ -5,35 +5,38 @@
  */
 package hu.mi.agnos.user.repository;
 
-import hu.mi.agnos.user.entity.AgnosRole;
-import hu.mi.agnos.user.entity.AgnosUserRoles;
+import hu.mi.agnos.user.entity.AgnosDAORole;
+import hu.mi.agnos.user.entity.AgnosDAOUserRoles;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.Properties;
+import javax.annotation.PostConstruct;
 
 /**
  *
  * @author parisek
  */
-public class AgnosRolePropertyRepository extends PropertyRepository<AgnosRole, String> {
+public class AgnosRolePropertyRepository extends PropertyRepository<AgnosDAORole, String> {
 
-    private String path;
+    public AgnosRolePropertyRepository(String path) {
+        super(AgnosDAORole.class, path);
+    }
 
+    @PostConstruct
     @Override
-    public void setURI(String path) {
-        this.path = path;
-        this.uri = new StringBuilder(path)
-                .append(path.endsWith("/") ? "" : "/")
+    protected void init() {
+        this.uri = new StringBuilder(this.path)
                 .append("application-roles.properties")
                 .toString();
     }
 
+    
     @Override
-    public Optional<AgnosRole> deleteById(String roleName) {
-        Optional<AgnosRole> deleted = findById(roleName);
+    public Optional<AgnosDAORole> deleteById(String roleName) {
+        Optional<AgnosDAORole> deleted = findById(roleName);
 
         if (deleted.isPresent()) {
             try (OutputStream output = new FileOutputStream(uri)) {
@@ -49,12 +52,11 @@ public class AgnosRolePropertyRepository extends PropertyRepository<AgnosRole, S
                 logger.error(io.getMessage());
                 return Optional.empty();
             }
-            AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository();
-            userRolesRepository.setURI(path);
-            for(AgnosUserRoles userRoles : userRolesRepository.findAllByRoleName(roleName)){
+            AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository(this.path);
+            for (AgnosDAOUserRoles userRoles : userRolesRepository.findAllByRoleName(roleName)) {
                 userRoles.getRoles().remove(roleName);
                 userRolesRepository.save(userRoles);
-            }            
+            }
         }
         return deleted;
     }
