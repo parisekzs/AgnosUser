@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.mi.agnos.user.entity;
+package hu.mi.agnos.user.entity.dao;
 
 /**
  *

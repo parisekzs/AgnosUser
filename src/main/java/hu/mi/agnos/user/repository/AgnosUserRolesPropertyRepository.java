@@ -5,7 +5,7 @@
  */
 package hu.mi.agnos.user.repository;
 
-import hu.mi.agnos.user.entity.AgnosDAOUserRoles;
+import hu.mi.agnos.user.entity.dao.AgnosDAOUserRoles;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;

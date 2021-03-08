@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hu.mi.agnos.user.entity.AbstractDAOEntity;
+import hu.mi.agnos.user.entity.dao.AbstractDAOEntity;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.mi.agnos.user.entity.DTO;
+package hu.mi.agnos.user.entity.dto;
 
 import java.util.ArrayList;
 import lombok.AllArgsConstructor;
@@ -25,8 +25,6 @@ public class AgnosDTOUser {
     private String encodedPassword;
     private ArrayList<String> roles;
     private boolean permanent;
-
-    
-       
+      
 }
 

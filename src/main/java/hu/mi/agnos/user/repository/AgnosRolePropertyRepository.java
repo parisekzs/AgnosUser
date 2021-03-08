@@ -5,8 +5,8 @@
  */
 package hu.mi.agnos.user.repository;
 
-import hu.mi.agnos.user.entity.AgnosDAORole;
-import hu.mi.agnos.user.entity.AgnosDAOUserRoles;
+import hu.mi.agnos.user.entity.dao.AgnosDAORole;
+import hu.mi.agnos.user.entity.dao.AgnosDAOUserRoles;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;

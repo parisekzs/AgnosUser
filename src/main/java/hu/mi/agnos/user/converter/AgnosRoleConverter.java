@@ -5,8 +5,8 @@
  */
 package hu.mi.agnos.user.converter;
 
-import hu.mi.agnos.user.entity.AgnosDAORole;
-import hu.mi.agnos.user.entity.DTO.AgnosDTORole;
+import hu.mi.agnos.user.entity.dao.AgnosDAORole;
+import hu.mi.agnos.user.entity.dto.AgnosDTORole;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

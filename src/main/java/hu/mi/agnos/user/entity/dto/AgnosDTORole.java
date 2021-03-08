@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.mi.agnos.user.entity.DTO;
+package hu.mi.agnos.user.entity.dto;
 
-import hu.mi.agnos.user.entity.AgnosDAORole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
