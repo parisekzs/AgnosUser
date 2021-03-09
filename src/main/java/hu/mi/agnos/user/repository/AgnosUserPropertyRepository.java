@@ -97,16 +97,28 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosDAOUser
     }
 
     @Override
-    public Optional<AgnosDAOUser> save(AgnosDAOUser user) {
+    public Optional<AgnosDAOUser> save(AgnosDAOUser user) {        
         Assert.notNull(user, "Entity must not be null.");
+        List<AgnosDAOUser> oldUsers = findAll();
+        
+        user.setEncodedPassword(user.getPlainPassword());
         try (OutputStream output = new FileOutputStream(uri)) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-            String value = mapper.writeValueAsString(user);
-
+            
             Properties prop = new Properties();
+            for(AgnosDAOUser oldUser : oldUsers){
+                if(user.getName().equals(oldUser.getName()) ){
+                    String value = mapper.writeValueAsString(user);
+                    prop.setProperty(user.getName(), value);
+                }
+                else{
+                    String value = mapper.writeValueAsString(oldUser);
+                    prop.setProperty(oldUser.getName(), value);
+                }
+            }
             // set the properties value
-            prop.setProperty(user.getName(), value);
+            
 
             // save properties to project root folder
             prop.store(output, null);
@@ -123,6 +135,48 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosDAOUser
 
     }
 
+        
+    public Optional<AgnosDAOUser> save(String oldUserName, AgnosDAOUser newUser) {        
+        Assert.notNull(newUser, "Entity must not be null.");
+        Assert.notNull(oldUserName, "Entity must not be null.");
+     
+        List<AgnosDAOUser> oldUsers = findAll();
+        
+        newUser.setEncodedPassword(newUser.getPlainPassword());
+        try (OutputStream output = new FileOutputStream(uri)) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+            
+            Properties prop = new Properties();
+            for(AgnosDAOUser oldUser : oldUsers){
+                if(oldUserName.equals(oldUser.getName()) ){
+                    String value = mapper.writeValueAsString(newUser);
+                    prop.setProperty(newUser.getName(), value);
+                }
+                else{
+                    String value = mapper.writeValueAsString(oldUser);
+                    prop.setProperty(oldUser.getName(), value);
+                }
+            }
+            // set the properties value
+            
+
+            // save properties to project root folder
+            prop.store(output, null);
+        } catch (IOException io) {
+            logger.error(io.getMessage());
+            return Optional.empty();
+        }
+        AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository(path);
+        return userRolesRepository
+                .save(new AgnosDAOUserRoles(newUser))
+                .isPresent()
+                        ? Optional.ofNullable(newUser)
+                        : Optional.empty();
+
+    }
+    
+    
     @Override
     public Optional<AgnosDAOUser> deleteById(String userName) {
         Optional<AgnosDAOUser> deleted = findById(userName);

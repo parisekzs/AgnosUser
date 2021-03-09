@@ -17,9 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  * @author parisek
  */
 @AllArgsConstructor
-public class AgnosDAOUser extends AbstractDAOEntity{
+public class AgnosDAOUser extends AbstractDAOEntity {
 
-   private String name;
+    private String name;
     private String email;
     private String realName;
     private String encodedPassword;
@@ -29,14 +29,14 @@ public class AgnosDAOUser extends AbstractDAOEntity{
     public AgnosDAOUser() {
         this.roles = new ArrayList<>();
     }
-    
+
     @JsonIgnore
-   @Override
+    @Override
     public String getName() {
         return name;
     }
 
-   @Override
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -62,9 +62,8 @@ public class AgnosDAOUser extends AbstractDAOEntity{
 
     public void setPermanent(boolean permanent) {
         this.permanent = permanent;
-    }    
-    
-   
+    }
+
 //
 //    public String getSaltString() {
 //        return Base64.getEncoder().encodeToString(salt);
@@ -73,13 +72,12 @@ public class AgnosDAOUser extends AbstractDAOEntity{
 //    public void setSaltFromString(String s) {
 //        this.salt = Base64.getDecoder().decode(s);
 //    }
-
     public String getEncodedPassword() {
         return encodedPassword;
     }
 
-    public void setEncodedPassword(String encodedPassword) {
-        this.encodedPassword = encodedPassword;
+    public void setEncodedPassword(String plainPassword) {        
+        this.encodedPassword = new BCryptPasswordEncoder().encode(plainPassword);
     }
 
 //    public String getEncodedPasswordString() {
@@ -89,7 +87,6 @@ public class AgnosDAOUser extends AbstractDAOEntity{
 //    public void setEncodedPasswordFromString(String s) {
 //        this.encodedPassword = Base64.getDecoder().decode(s);
 //    }
-
     @JsonIgnore
     public String getPlainPassword() {
         return "";
@@ -105,6 +102,7 @@ public class AgnosDAOUser extends AbstractDAOEntity{
             }
         }
     }
+
     @JsonIgnore
     public ArrayList<String> getRoles() {
         return roles;
