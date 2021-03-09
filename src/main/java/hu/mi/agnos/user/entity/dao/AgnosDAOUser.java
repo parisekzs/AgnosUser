@@ -16,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  *
  * @author parisek
  */
-@AllArgsConstructor
 public class AgnosDAOUser extends AbstractDAOEntity {
 
     private String name;
@@ -28,6 +27,14 @@ public class AgnosDAOUser extends AbstractDAOEntity {
 
     public AgnosDAOUser() {
         this.roles = new ArrayList<>();
+    }
+
+    public AgnosDAOUser(String name, String email, String realName, ArrayList<String> roles, boolean permanent) {
+        this.name = name;
+        this.email = email;
+        this.realName = realName;
+        this.roles = roles;
+        this.permanent = permanent;
     }
 
     @JsonIgnore
@@ -76,30 +83,14 @@ public class AgnosDAOUser extends AbstractDAOEntity {
         return encodedPassword;
     }
 
-    public void setEncodedPassword(String plainPassword) {        
-        this.encodedPassword = new BCryptPasswordEncoder().encode(plainPassword);
-    }
-
-//    public String getEncodedPasswordString() {
-//        return Base64.getEncoder().encodeToString(encodedPassword.getBytes());
-//    }
-//
-//    public void setEncodedPasswordFromString(String s) {
-//        this.encodedPassword = Base64.getDecoder().decode(s);
-//    }
-    @JsonIgnore
-    public String getPlainPassword() {
-        return "";
+    public void setEncodedPassword(String encodedPassword) {
+        this.encodedPassword = encodedPassword;
     }
 
     public void setPlainPassword(String plainPassword) {
         if (plainPassword.length() > 0) {
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             this.encodedPassword = passwordEncoder.encode(plainPassword);
-        } else {
-            if (this.encodedPassword == null) {
-                this.encodedPassword = "Nincsjelszobeallitva";
-            }
         }
     }
 

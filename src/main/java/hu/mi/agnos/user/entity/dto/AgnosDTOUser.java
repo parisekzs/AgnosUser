@@ -24,7 +24,7 @@ public class AgnosDTOUser {
     private String name;
     private String email;
     private String realName;
-    private String encodedPassword;
+    private String plainPassword;
     private ArrayList<String> roles;
     private boolean permanent;
       

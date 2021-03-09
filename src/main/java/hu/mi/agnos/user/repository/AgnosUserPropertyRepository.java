@@ -28,11 +28,11 @@ import org.springframework.util.Assert;
  * @author parisek
  */
 public class AgnosUserPropertyRepository extends PropertyRepository<AgnosDAOUser, String> {
-
+    
     public AgnosUserPropertyRepository(String path) {
         super(AgnosDAOUser.class, path);
     }
-
+    
     @PostConstruct
     @Override
     protected void init() {
@@ -44,7 +44,7 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosDAOUser
                 .append("application-users.properties")
                 .toString();
     }
-
+    
     @Override
     public List<AgnosDAOUser> findAll() {
         List<AgnosDAOUser> result = new ArrayList<>();
@@ -53,7 +53,7 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosDAOUser
             // load a properties file
             prop.load(new InputStreamReader(input, Charset.forName("UTF-8")));
             for (Object userName : prop.keySet()) {
-
+                
                 String valueString = prop.getProperty((String) userName);
                 if (valueString != null) {
                     AgnosDAOUser user = parseEntityFromJSONString((String) userName, valueString);
@@ -70,11 +70,11 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosDAOUser
         }
         return result;
     }
-
+    
     @Override
     public Optional<AgnosDAOUser> findById(String userName) {
         Assert.notNull(userName, ID_MUST_NOT_BE_NULL);
-
+        
         try (FileInputStream input = new FileInputStream(this.uri)) {
             AgnosDAOUser result = null;
             Properties prop = new Properties();
@@ -95,30 +95,30 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosDAOUser
             return Optional.empty();
         }
     }
-
+    
     @Override
     public Optional<AgnosDAOUser> save(AgnosDAOUser user) {        
         Assert.notNull(user, "Entity must not be null.");
         List<AgnosDAOUser> oldUsers = findAll();
         
-        user.setEncodedPassword(user.getPlainPassword());
         try (OutputStream output = new FileOutputStream(uri)) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
             
             Properties prop = new Properties();
-            for(AgnosDAOUser oldUser : oldUsers){
-                if(user.getName().equals(oldUser.getName()) ){
+            for (AgnosDAOUser oldUser : oldUsers) {
+                if (user.getName().equals(oldUser.getName())) {
+                    if (user.getEncodedPassword() == null) {
+                        user.setEncodedPassword(oldUser.getEncodedPassword());
+                    }
                     String value = mapper.writeValueAsString(user);
                     prop.setProperty(user.getName(), value);
-                }
-                else{
+                } else {
                     String value = mapper.writeValueAsString(oldUser);
                     prop.setProperty(oldUser.getName(), value);
                 }
             }
             // set the properties value
-            
 
             // save properties to project root folder
             prop.store(output, null);
@@ -132,34 +132,33 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosDAOUser
                 .isPresent()
                         ? Optional.ofNullable(user)
                         : Optional.empty();
-
-    }
-
         
+    }
+    
     public Optional<AgnosDAOUser> save(String oldUserName, AgnosDAOUser newUser) {        
         Assert.notNull(newUser, "Entity must not be null.");
         Assert.notNull(oldUserName, "Entity must not be null.");
-     
+        
         List<AgnosDAOUser> oldUsers = findAll();
         
-        newUser.setEncodedPassword(newUser.getPlainPassword());
         try (OutputStream output = new FileOutputStream(uri)) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
             
             Properties prop = new Properties();
-            for(AgnosDAOUser oldUser : oldUsers){
-                if(oldUserName.equals(oldUser.getName()) ){
+            for (AgnosDAOUser oldUser : oldUsers) {
+                if (oldUserName.equals(oldUser.getName())) {
+                    if (newUser.getEncodedPassword() == null) {
+                        newUser.setEncodedPassword(oldUser.getEncodedPassword());
+                    }
                     String value = mapper.writeValueAsString(newUser);
                     prop.setProperty(newUser.getName(), value);
-                }
-                else{
+                } else {
                     String value = mapper.writeValueAsString(oldUser);
                     prop.setProperty(oldUser.getName(), value);
                 }
             }
             // set the properties value
-            
 
             // save properties to project root folder
             prop.store(output, null);
@@ -173,17 +172,16 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosDAOUser
                 .isPresent()
                         ? Optional.ofNullable(newUser)
                         : Optional.empty();
-
+        
     }
-    
     
     @Override
     public Optional<AgnosDAOUser> deleteById(String userName) {
         Optional<AgnosDAOUser> deleted = findById(userName);
-
+        
         if (deleted.isPresent()) {
             try (OutputStream output = new FileOutputStream(uri)) {
-
+                
                 Properties prop = new Properties();
                 // set the properties value
                 prop.remove(userName);
@@ -203,5 +201,5 @@ public class AgnosUserPropertyRepository extends PropertyRepository<AgnosDAOUser
                         ? deleted
                         : Optional.empty();
     }
-
+    
 }

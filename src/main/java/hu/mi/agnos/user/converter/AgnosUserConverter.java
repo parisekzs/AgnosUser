@@ -19,14 +19,15 @@ import org.springframework.util.Assert;
 public class AgnosUserConverter {
 
     public static AgnosDAOUser dto2dao(AgnosDTOUser dtoUser) {
-            return new AgnosDAOUser(
-                    dtoUser.getName(),
-                    dtoUser.getEmail(),
-                    dtoUser.getRealName(),
-                    dtoUser.getEncodedPassword(),
-                    dtoUser.getRoles(),
-                    dtoUser.isPermanent()
-            );        
+        AgnosDAOUser daoUser = new AgnosDAOUser(
+                dtoUser.getName(),
+                dtoUser.getEmail(),
+                dtoUser.getRealName(),
+                dtoUser.getRoles(),
+                dtoUser.isPermanent()
+        );
+        daoUser.setPlainPassword(dtoUser.getPlainPassword());
+        return daoUser;
     }
 
     public static List<AgnosDAOUser> dto2dao(List<AgnosDTOUser> dtoUsers) {
@@ -39,10 +40,10 @@ public class AgnosUserConverter {
                         user.getName(),
                         user.getEmail(),
                         user.getRealName(),
-                        user.getEncodedPassword(),
                         user.getRoles(),
                         user.isPermanent()
                 );
+                daoUser.setPlainPassword(user.getPlainPassword());
                 result.add(daoUser);
             }
         }
