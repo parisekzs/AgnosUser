@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.mi.agnos.user.entity.dao;
+package hu.mi.user.properties.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
@@ -14,16 +14,16 @@ import lombok.AllArgsConstructor;
  * @author parisek
  */
 @AllArgsConstructor
-public class AgnosDAORole extends AbstractDAOEntity {
+public class Role extends AbstractEntity {
 
     private String name;
     private boolean permanent;
     private String description;
 
-    public AgnosDAORole() {
+    public Role() {
     }
 
-    public AgnosDAORole(String name) {
+    public Role(String name) {
         this.name = name;
     }
 
@@ -71,7 +71,7 @@ public class AgnosDAORole extends AbstractDAOEntity {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final AgnosDAORole other = (AgnosDAORole) obj;
+        final Role other = (Role) obj;
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }

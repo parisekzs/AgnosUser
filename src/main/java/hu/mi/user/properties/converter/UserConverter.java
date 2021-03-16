@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.mi.agnos.user.converter;
+package hu.mi.user.properties.converter;
 
-import hu.mi.agnos.user.entity.dao.AgnosDAOUser;
-import hu.mi.agnos.user.entity.dto.AgnosDTOUser;
+import hu.mi.user.properties.entity.User;
+import hu.mi.user.properties.model.UserDTO;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +16,10 @@ import org.springframework.util.Assert;
  *
  * @author parisek
  */
-public class AgnosUserConverter {
+public class UserConverter {
 
-    public static AgnosDAOUser dto2dao(AgnosDTOUser dtoUser) {
-        AgnosDAOUser daoUser = new AgnosDAOUser(
+    public static User dto2dao(UserDTO dtoUser) {
+        User daoUser = new User(
                 dtoUser.getName(),
                 dtoUser.getEmail(),
                 dtoUser.getRealName(),
@@ -30,13 +30,13 @@ public class AgnosUserConverter {
         return daoUser;
     }
 
-    public static List<AgnosDAOUser> dto2dao(List<AgnosDTOUser> dtoUsers) {
-        List<AgnosDAOUser> result = new ArrayList<>();
+    public static List<User> dto2dao(List<UserDTO> dtoUsers) {
+        List<User> result = new ArrayList<>();
         if (!dtoUsers.isEmpty()) {
 
-            for (AgnosDTOUser user : dtoUsers) {
+            for (UserDTO user : dtoUsers) {
 
-                AgnosDAOUser daoUser = new AgnosDAOUser(
+                User daoUser = new User(
                         user.getName(),
                         user.getEmail(),
                         user.getRealName(),
@@ -50,12 +50,12 @@ public class AgnosUserConverter {
         return result;
     }
 
-    public static Optional<AgnosDTOUser> dao2dto(Optional<AgnosDAOUser> daoUser) {
+    public static Optional<UserDTO> dao2dto(Optional<User> daoUser) {
         if (daoUser.isEmpty()) {
             return Optional.empty();
         } else {
-            AgnosDAOUser user = daoUser.get();
-            AgnosDTOUser dtoUser = new AgnosDTOUser(
+            User user = daoUser.get();
+            UserDTO dtoUser = new UserDTO(
                     user.getName(),
                     user.getEmail(),
                     user.getRealName(),
@@ -67,11 +67,11 @@ public class AgnosUserConverter {
         }
     }
 
-        public static Optional<AgnosDTOUser> dao2dto(AgnosDAOUser user) {
+        public static Optional<UserDTO> dao2dto(User user) {
         if (user == null) {
             return Optional.empty();
         } else {
-            AgnosDTOUser dtoUser = new AgnosDTOUser(
+            UserDTO dtoUser = new UserDTO(
                     user.getName(),
                     user.getEmail(),
                     user.getRealName(),
@@ -84,13 +84,13 @@ public class AgnosUserConverter {
     }
 
     
-    public static List<AgnosDTOUser> dao2dto(List<AgnosDAOUser> daoUsers) {
-        List<AgnosDTOUser> result = new ArrayList<>();
+    public static List<UserDTO> dao2dto(List<User> daoUsers) {
+        List<UserDTO> result = new ArrayList<>();
         if (!daoUsers.isEmpty()) {
 
-            for (AgnosDAOUser user : daoUsers) {
+            for (User user : daoUsers) {
 
-                AgnosDTOUser dtoUser = new AgnosDTOUser(
+                UserDTO dtoUser = new UserDTO(
                         user.getName(),
                         user.getEmail(),
                         user.getRealName(),

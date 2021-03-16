@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.mi.agnos.user.entity.dao;
+package hu.mi.user.properties.entity;
 
 /**
  *
  * @author parisek
  */
-public abstract class AbstractDAOEntity {
+public abstract class AbstractEntity {
     public abstract void setName(String name);
     public abstract String getName();
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.mi.agnos.user.entity.dao;
+package hu.mi.user.properties.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
@@ -12,16 +12,16 @@ import java.util.ArrayList;
  *
  * @author parisek
  */
-public class AgnosDAOUserRoles extends AbstractDAOEntity{
+public class UserRoles extends AbstractEntity{
 
     private String name;
     private ArrayList<String> roles;
 
-    public AgnosDAOUserRoles() {
+    public UserRoles() {
     }
 
     
-    public AgnosDAOUserRoles(AgnosDAOUser user) {
+    public UserRoles(User user) {
         this.roles = user.getRoles();
         this.name = user.getName();
     }

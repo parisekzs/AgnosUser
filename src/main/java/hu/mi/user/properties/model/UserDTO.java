@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.mi.agnos.user.entity.dto;
+package hu.mi.user.properties.model;
 
 import java.util.ArrayList;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AgnosDTOUser {
+public class UserDTO {
 
     private String name;
     private String email;

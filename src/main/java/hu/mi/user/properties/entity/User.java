@@ -3,20 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.mi.agnos.user.entity.dao;
+package hu.mi.user.properties.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
-import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  *
  * @author parisek
  */
-public class AgnosDAOUser extends AbstractDAOEntity {
+public class User extends AbstractEntity {
 
     private String name;
     private String email;
@@ -25,11 +24,11 @@ public class AgnosDAOUser extends AbstractDAOEntity {
     private ArrayList<String> roles;
     private boolean permanent;
 
-    public AgnosDAOUser() {
+    public User() {
         this.roles = new ArrayList<>();
     }
 
-    public AgnosDAOUser(String name, String email, String realName, ArrayList<String> roles, boolean permanent) {
+    public User(String name, String email, String realName, ArrayList<String> roles, boolean permanent) {
         this.name = name;
         this.email = email;
         this.realName = realName;
@@ -143,7 +142,7 @@ public class AgnosDAOUser extends AbstractDAOEntity {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final AgnosDAOUser other = (AgnosDAOUser) obj;
+        final User other = (User) obj;
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }

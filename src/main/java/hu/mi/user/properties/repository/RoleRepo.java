@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.mi.agnos.user.repository;
+package hu.mi.user.properties.repository;
 
-import hu.mi.agnos.user.entity.dao.AgnosDAORole;
-import hu.mi.agnos.user.entity.dao.AgnosDAOUserRoles;
+import hu.mi.user.properties.entity.Role;
+import hu.mi.user.properties.entity.UserRoles;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -19,10 +19,10 @@ import javax.annotation.PostConstruct;
  *
  * @author parisek
  */
-public class AgnosRolePropertyRepository extends PropertyRepository<AgnosDAORole, String> {
+public class RoleRepo extends AbstractRepo<Role, String> {
 
-    public AgnosRolePropertyRepository(String path) {
-        super(AgnosDAORole.class, path);
+    public RoleRepo(String path) {
+        super(Role.class, path);
     }
 
     @PostConstruct
@@ -48,8 +48,8 @@ public class AgnosRolePropertyRepository extends PropertyRepository<AgnosDAORole
             } catch (IOException io) {
                 logger.error(io.getMessage());
             }
-            AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository(this.path);
-            for (AgnosDAOUserRoles userRoles : userRolesRepository.findAllByRoleName(roleName)) {
+            UserRolesRepository userRolesRepository = new UserRolesRepository(this.path);
+            for (UserRoles userRoles : userRolesRepository.findAllByRoleName(roleName)) {
                 userRoles.getRoles().remove(roleName);
                 userRolesRepository.save(userRoles);
             }

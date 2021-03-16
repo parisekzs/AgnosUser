@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.mi.agnos.user.repository;
+package hu.mi.user.properties.repository;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hu.mi.agnos.user.entity.dao.AbstractDAOEntity;
+import hu.mi.user.properties.entity.AbstractEntity;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.util.Assert;
 
-public abstract class PropertyRepository<T extends AbstractDAOEntity, ID extends String> implements CrudRepository<T, ID> {
+public abstract class AbstractRepo<T extends AbstractEntity, ID extends String> implements CrudRepository<T, ID> {
 
     protected static final String ID_MUST_NOT_BE_NULL = "The given id must not be null!";
     protected final Logger logger;
@@ -37,7 +37,7 @@ public abstract class PropertyRepository<T extends AbstractDAOEntity, ID extends
 
     private Class<T> entityClass;
 
-    public PropertyRepository(Class<T> entityClass, String path) {
+    public AbstractRepo(Class<T> entityClass, String path) {
         this.entityClass = entityClass;
         logger = LoggerFactory.getLogger(entityClass);
         this.path = new StringBuilder(path)

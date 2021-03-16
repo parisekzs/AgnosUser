@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.mi.agnos.user.converter;
+package hu.mi.user.properties.converter;
 
-import hu.mi.agnos.user.entity.dao.AgnosDAORole;
-import hu.mi.agnos.user.entity.dto.AgnosDTORole;
+import hu.mi.user.properties.entity.Role;
+import hu.mi.user.properties.model.RoleDTO;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,23 +15,23 @@ import java.util.Optional;
  *
  * @author parisek
  */
-public class AgnosRoleConverter {
+public class RoleConverter {
 
-    public static AgnosDAORole dto2dao(AgnosDTORole role) {
-        return new AgnosDAORole(
+    public static Role dto2dao(RoleDTO role) {
+        return new Role(
                 role.getName(),
                 role.isPermanent(),
                 role.getDescription()
         );
     }
 
-    public static List<AgnosDAORole> dto2dao(List<AgnosDTORole> dtoRoles) {
-        List<AgnosDAORole> result = new ArrayList<>();
+    public static List<Role> dto2dao(List<RoleDTO> dtoRoles) {
+        List<Role> result = new ArrayList<>();
         if (!dtoRoles.isEmpty()) {
 
-            for (AgnosDTORole role : dtoRoles) {
+            for (RoleDTO role : dtoRoles) {
 
-                AgnosDAORole daoRole = new AgnosDAORole(
+                Role daoRole = new Role(
                         role.getName(),
                         role.isPermanent(),
                         role.getDescription()
@@ -42,11 +42,11 @@ public class AgnosRoleConverter {
         return result;
     }
 
-    public static Optional<AgnosDTORole> dao2dto(AgnosDAORole role) {
+    public static Optional<RoleDTO> dao2dto(Role role) {
         if (role == null) {
             return Optional.empty();
         } else {
-            AgnosDTORole dtoRole = new AgnosDTORole(
+            RoleDTO dtoRole = new RoleDTO(
                     role.getName(),
                     role.isPermanent(),
                     role.getDescription()
@@ -55,12 +55,12 @@ public class AgnosRoleConverter {
         }
     }
 
-    public static Optional<AgnosDTORole> dao2dto(Optional<AgnosDAORole> daoRole) {
+    public static Optional<RoleDTO> dao2dto(Optional<Role> daoRole) {
         if (daoRole.isEmpty()) {
             return Optional.empty();
         } else {
-            AgnosDAORole role = daoRole.get();
-            AgnosDTORole dtoRole = new AgnosDTORole(
+            Role role = daoRole.get();
+            RoleDTO dtoRole = new RoleDTO(
                     role.getName(),
                     role.isPermanent(),
                     role.getDescription()
@@ -69,13 +69,13 @@ public class AgnosRoleConverter {
         }
     }
 
-    public static List<AgnosDTORole> dao2dto(List<AgnosDAORole> daoRoles) {
-        List<AgnosDTORole> result = new ArrayList<>();
+    public static List<RoleDTO> dao2dto(List<Role> daoRoles) {
+        List<RoleDTO> result = new ArrayList<>();
         if (!daoRoles.isEmpty()) {
 
-            for (AgnosDAORole role : daoRoles) {
+            for (Role role : daoRoles) {
 
-                AgnosDTORole dtoRole = new AgnosDTORole(
+                RoleDTO dtoRole = new RoleDTO(
                         role.getName(),
                         role.isPermanent(),
                         role.getDescription()
