@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +24,10 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.util.Assert;
 
-public abstract class PropertyRepository<T extends AbstractDAOEntity, ID extends Serializable> implements IPropertyRepository<T, ID> {
+public abstract class PropertyRepository<T extends AbstractDAOEntity, ID extends String> implements CrudRepository<T, ID> {
 
     protected static final String ID_MUST_NOT_BE_NULL = "The given id must not be null!";
     protected final Logger logger;
@@ -36,7 +36,7 @@ public abstract class PropertyRepository<T extends AbstractDAOEntity, ID extends
     protected final String path;
 
     private Class<T> entityClass;
-            
+
     public PropertyRepository(Class<T> entityClass, String path) {
         this.entityClass = entityClass;
         logger = LoggerFactory.getLogger(entityClass);
@@ -50,7 +50,7 @@ public abstract class PropertyRepository<T extends AbstractDAOEntity, ID extends
     protected abstract void init();
 
     @Override
-    public Optional<T> deleteById(ID id) {
+    public void deleteById(ID id) {
         Optional<T> deleted = findById(id);
 
         if (deleted.isPresent()) {
@@ -62,13 +62,27 @@ public abstract class PropertyRepository<T extends AbstractDAOEntity, ID extends
 
                 // save properties to project root folder
                 prop.store(output, null);
-                return deleted;
             } catch (IOException io) {
                 logger.error(io.getMessage());
-                return Optional.empty();
             }
         }
-        return deleted;
+    }
+
+    @Override
+    public void delete(T t) {
+        deleteById((ID) t.getName());
+    }
+
+    @Override
+    public void deleteAll(Iterable<? extends T> entities) {
+        for (T entity : entities) {
+            delete(entity);
+        }
+    }
+
+    @Override
+    public void deleteAll() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -88,6 +102,18 @@ public abstract class PropertyRepository<T extends AbstractDAOEntity, ID extends
             return Optional.empty();
         }
 
+    }
+
+    @Override
+    public Iterable<T> findAllById(Iterable<ID> entityIds) {
+        List<T> result = new ArrayList<>();
+        for (ID id : entityIds) {
+            Optional<T> optEntity = findById(id);
+            if (optEntity.isPresent()) {
+                result.add(optEntity.get());
+            }
+        }
+        return result;
     }
 
     @Override
@@ -111,27 +137,57 @@ public abstract class PropertyRepository<T extends AbstractDAOEntity, ID extends
         return result;
     }
 
+    private void storeToProperties(Properties prop, ObjectMapper mapper, T entity) throws JsonProcessingException {
+        String value = mapper.writeValueAsString(entity);
+        prop.setProperty(entity.getName(), value);
+
+    }
+
     @Override
-    public Optional<T> save(T entity) {
+    public <S extends T> S save(S entity) {
 
         Assert.notNull(entity, "Entity must not be null.");
-
+        List<T> oldEntities = findAll();
         try (OutputStream output = new FileOutputStream(uri)) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-            String value = mapper.writeValueAsString(entity);
 
             Properties prop = new Properties();
-            // set the properties value
-            prop.setProperty(entity.getName(), value);
-
-            // save properties to project root folder
+            boolean hasEntity = false;
+            //copy all property to new file
+            for (T oldEntity : oldEntities) {
+                if (entity.getName().equals(oldEntity.getName())) {
+                    storeToProperties(prop, mapper, entity);
+                    hasEntity = true;
+                } else {
+                    storeToProperties(prop, mapper, oldEntity);
+                }
+            }
+            //if there is no such entity yet
+            if (!hasEntity) {
+                storeToProperties(prop, mapper, entity);
+            }
+            
             prop.store(output, null);
-            return Optional.ofNullable(entity);
+
+            return entity;
         } catch (IOException io) {
             logger.error(io.getMessage());
-            return Optional.empty();
+            return null;
         }
+    }
+
+    @Override
+    public <S extends T> Iterable<S> saveAll(Iterable<S> entities) {
+        List<S> result = new ArrayList<>();
+        for (S entity : entities) {
+            S saveResult = save(entity);
+            if (saveResult != null) {
+                result.add(saveResult);
+            }
+
+        }
+        return result;
     }
 
     protected T parseEntityFromJSONString(String key, String value) {
@@ -147,6 +203,16 @@ public abstract class PropertyRepository<T extends AbstractDAOEntity, ID extends
             logger.error(ex.getMessage());
         }
         return result;
+    }
+
+    @Override
+    public boolean existsById(ID id) {
+        return this.findById(id).isPresent();
+    }
+
+    @Override
+    public long count() {
+        return this.findAll().size();
     }
 
 }

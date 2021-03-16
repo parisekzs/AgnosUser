@@ -33,12 +33,9 @@ public class AgnosRolePropertyRepository extends PropertyRepository<AgnosDAORole
                 .toString();
     }
 
-    
     @Override
-    public Optional<AgnosDAORole> deleteById(String roleName) {
-        Optional<AgnosDAORole> deleted = findById(roleName);
-
-        if (deleted.isPresent()) {
+    public void deleteById(String roleName) {
+        if (findById(roleName).isPresent()) {
             try (OutputStream output = new FileOutputStream(uri)) {
 
                 Properties prop = new Properties();
@@ -50,7 +47,6 @@ public class AgnosRolePropertyRepository extends PropertyRepository<AgnosDAORole
 
             } catch (IOException io) {
                 logger.error(io.getMessage());
-                return Optional.empty();
             }
             AgnosUserRolesPropertyRepository userRolesRepository = new AgnosUserRolesPropertyRepository(this.path);
             for (AgnosDAOUserRoles userRoles : userRolesRepository.findAllByRoleName(roleName)) {
@@ -58,7 +54,6 @@ public class AgnosRolePropertyRepository extends PropertyRepository<AgnosDAORole
                 userRolesRepository.save(userRoles);
             }
         }
-        return deleted;
     }
 
 }
