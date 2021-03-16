@@ -10,7 +10,6 @@ import hu.mi.user.properties.model.UserDTO;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.util.Assert;
 
 /**
  *
@@ -59,7 +58,7 @@ public class UserConverter {
                     user.getName(),
                     user.getEmail(),
                     user.getRealName(),
-                    user.getEncodedPassword(),
+                    "",
                     user.getRoles(),
                     user.isPermanent()
             );
@@ -75,7 +74,7 @@ public class UserConverter {
                     user.getName(),
                     user.getEmail(),
                     user.getRealName(),
-                    user.getEncodedPassword(),
+                    "",
                     user.getRoles(),
                     user.isPermanent()
             );
@@ -94,7 +93,7 @@ public class UserConverter {
                         user.getName(),
                         user.getEmail(),
                         user.getRealName(),
-                        user.getEncodedPassword(),
+                        "",
                         user.getRoles(),
                         user.isPermanent()
                 );
