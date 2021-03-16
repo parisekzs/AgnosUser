@@ -67,6 +67,23 @@ public class AgnosUserConverter {
         }
     }
 
+        public static Optional<AgnosDTOUser> dao2dto(AgnosDAOUser user) {
+        if (user == null) {
+            return Optional.empty();
+        } else {
+            AgnosDTOUser dtoUser = new AgnosDTOUser(
+                    user.getName(),
+                    user.getEmail(),
+                    user.getRealName(),
+                    user.getEncodedPassword(),
+                    user.getRoles(),
+                    user.isPermanent()
+            );
+            return Optional.ofNullable(dtoUser);
+        }
+    }
+
+    
     public static List<AgnosDTOUser> dao2dto(List<AgnosDAOUser> daoUsers) {
         List<AgnosDTOUser> result = new ArrayList<>();
         if (!daoUsers.isEmpty()) {

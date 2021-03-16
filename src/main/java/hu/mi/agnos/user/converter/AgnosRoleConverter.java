@@ -42,6 +42,19 @@ public class AgnosRoleConverter {
         return result;
     }
 
+    public static Optional<AgnosDTORole> dao2dto(AgnosDAORole role) {
+        if (role == null) {
+            return Optional.empty();
+        } else {
+            AgnosDTORole dtoRole = new AgnosDTORole(
+                    role.getName(),
+                    role.isPermanent(),
+                    role.getDescription()
+            );
+            return Optional.ofNullable(dtoRole);
+        }
+    }
+
     public static Optional<AgnosDTORole> dao2dto(Optional<AgnosDAORole> daoRole) {
         if (daoRole.isEmpty()) {
             return Optional.empty();
