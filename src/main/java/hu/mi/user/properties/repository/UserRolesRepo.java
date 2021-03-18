@@ -14,9 +14,9 @@ import javax.annotation.PostConstruct;
  *
  * @author parisek
  */
-public class UserRolesRepository extends AbstractPropertyRepo<UserRoles, String> {
+public class UserRolesRepo extends AbstractPropertyRepo<UserRoles, String> {
 
-    public UserRolesRepository(String path) {
+    public UserRolesRepo(String path) {
         super(UserRoles.class, path);
     }
 

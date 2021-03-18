@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.mi.user.properties.entity.AbstractEntity;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -54,27 +55,12 @@ public abstract class AbstractPropertyRepo<T extends AbstractEntity, ID extends 
 
     @Override
     public void deleteById(ID id) {
-        if (findById(id).isPresent()) {
-            String huntedId = (String) id;
-            List<T> oldEntities = findAll();
-
-            try (OutputStream output = new FileOutputStream(tmpUri)) {
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
-                Properties prop = new Properties();
-                for (T oldEntity : oldEntities) {
-                    if (!oldEntity.getName().equals(huntedId)) {
-                        storeToProperties(prop, mapper, oldEntity);
-                    }
-                }
-                // save properties to project root folder
-                prop.store(output, null);
-            } catch (IOException io) {
-                logger.error(io.getMessage());
-            }
-            File tmpfile = new File(tmpUri);
-            tmpfile.renameTo(new File(uri));
+        Optional<T> optEntity = findById(id);
+        if (optEntity.isPresent()) {
+            T entity = optEntity.get();
+            List<T> storedEntities = findAll();
+            storedEntities.remove(entity);
+            storeToFile(storedEntities);
         }
     }
 
@@ -85,9 +71,11 @@ public abstract class AbstractPropertyRepo<T extends AbstractEntity, ID extends 
 
     @Override
     public void deleteAll(Iterable<? extends T> entities) {
+        List<T> storedEntities = findAll();
         for (T entity : entities) {
-            delete(entity);
+            storedEntities.remove(entity);
         }
+        storeToFile(storedEntities);
     }
 
     @Override
@@ -149,51 +137,31 @@ public abstract class AbstractPropertyRepo<T extends AbstractEntity, ID extends 
 
     @Override
     public <S extends T> S save(S entity) {
-
         Assert.notNull(entity, "Entity must not be null.");
-        List<T> oldEntities = findAll();
-        try (OutputStream output = new FileOutputStream(tmpUri)) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
-            Properties prop = new Properties();
-            boolean hasEntity = false;
-            //copy all property to new file
-            for (T oldEntity : oldEntities) {
-                if (entity.getName().equals(oldEntity.getName())) {
-                    storeToProperties(prop, mapper, entity);
-                    hasEntity = true;
-                } else {
-                    storeToProperties(prop, mapper, oldEntity);
-                }
-            }
-            //if there is no such entity yet
-            if (!hasEntity) {
-                storeToProperties(prop, mapper, entity);
-            }
-
-            prop.store(output, null);
-
-            File tmpfile = new File(tmpUri);
-            tmpfile.renameTo(new File(uri));
-
-            return entity;
-        } catch (IOException io) {
-            logger.error(io.getMessage());
-            return null;
+        List<T> storedEntities = findAll();
+        if (storedEntities.contains(entity)) {
+            storedEntities.remove(entity);
         }
+        storedEntities.add(entity);
+        storeToFile(storedEntities);
+        return entity;
+
     }
 
     @Override
     public <S extends T> Iterable<S> saveAll(Iterable<S> entities) {
         List<S> result = new ArrayList<>();
-        for (S entity : entities) {
-            S saveResult = save(entity);
-            if (saveResult != null) {
-                result.add(saveResult);
-            }
 
+        List<T> storedEntities = findAll();
+
+        for (S entity : entities) {
+            if (storedEntities.contains(entity)) {
+                storedEntities.remove(entity);
+            }
+            storedEntities.add(entity);
+            result.add(entity);
         }
+        storeToFile(storedEntities);
         return result;
     }
 
@@ -205,6 +173,32 @@ public abstract class AbstractPropertyRepo<T extends AbstractEntity, ID extends 
     @Override
     public long count() {
         return this.findAll().size();
+    }
+
+    protected boolean storeToFile(List<T> entities) {
+        try (OutputStream output = new FileOutputStream(tmpUri)) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+            Properties prop = new Properties();
+            //copy all property to new file
+            for (T entity : entities) {
+                String value = mapper.writeValueAsString(entity);
+                prop.setProperty(entity.getName(), value);
+            }
+            prop.store(output, null);
+
+        } catch (FileNotFoundException ex) {
+            logger.error(ex.getMessage());
+            return false;
+        } catch (IOException io) {
+            logger.error(io.getMessage());
+            return false;
+        }
+
+        File tmpfile = new File(tmpUri);
+        tmpfile.renameTo(new File(uri));
+        return true;
     }
 
     protected T parseEntityFromJSONString(String key, String value) {
@@ -221,11 +215,4 @@ public abstract class AbstractPropertyRepo<T extends AbstractEntity, ID extends 
         }
         return result;
     }
-
-    protected void storeToProperties(Properties prop, ObjectMapper mapper, T entity) throws JsonProcessingException {
-        String value = mapper.writeValueAsString(entity);
-        prop.setProperty(entity.getName(), value);
-
-    }
-
 }

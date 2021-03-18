@@ -45,10 +45,6 @@ public class UserRepo extends AbstractPropertyRepo<User, String> {
         this.tmpUri = new StringBuilder(this.path)
                 .append("auth/tmp-application-users.properties")
                 .toString();
-        //TODO: kell-e?
-        super.uri = new StringBuilder(this.path)
-                .append("auth/application-users.properties")
-                .toString();
     }
 
     @Override
@@ -63,7 +59,7 @@ public class UserRepo extends AbstractPropertyRepo<User, String> {
                 String valueString = prop.getProperty((String) userName);
                 if (valueString != null) {
                     User user = parseEntityFromJSONString((String) userName, valueString);
-                    UserRolesRepository userRolesRepository = new UserRolesRepository(this.path);
+                    UserRolesRepo userRolesRepository = new UserRolesRepo(this.path);
                     Optional<UserRoles> userRoles = userRolesRepository.findById((String) userName);
                     if (userRoles.isPresent()) {
                         user.setRoles(userRoles.get().getRoles());
@@ -89,7 +85,7 @@ public class UserRepo extends AbstractPropertyRepo<User, String> {
             String valueString = prop.getProperty(userName);
             if (valueString != null) {
                 result = parseEntityFromJSONString(userName, valueString);
-                UserRolesRepository userRolesRepository = new UserRolesRepository(path);
+                UserRolesRepo userRolesRepository = new UserRolesRepo(path);
                 Optional<UserRoles> userRoles = userRolesRepository.findById(userName);
                 if (userRoles.isPresent()) {
                     result.setRoles(userRoles.get().getRoles());
@@ -105,111 +101,31 @@ public class UserRepo extends AbstractPropertyRepo<User, String> {
     @Override
     public User save(User user) {
         Assert.notNull(user, "Entity must not be null!");
-        try (OutputStream output = new FileOutputStream(tmpUri)) {
-            List<User> storedUsers = findAll();
-
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-            boolean hasUser = false;
-            Properties prop = new Properties();
-            //copy all property to new file
-            for (User storedUser : storedUsers) {
-                if (user.getName().equals(storedUser.getName())) {
-                    hasUser = true;
-                }
-                storeToProperties(prop, mapper, user, storedUser);
+        List<User> storedUsers = findAll();
+        if (storedUsers.contains(user)) {
+            if (user.getEncodedPassword() == null) {
+                User storedUser = storedUsers.get(storedUsers.indexOf(user));
+                user.setEncodedPassword(storedUser.getEncodedPassword());
             }
-            //if there is no such entity yet
-            if (!hasUser) {
-                storeToProperties(prop, mapper, user);
-            }
-
-            prop.store(output, null);
-        } catch (IOException io) {
-            logger.error(io.getMessage());
-            return null;
+            storedUsers.remove(user);
         }
-        File tmpfile = new File(tmpUri);
-        tmpfile.renameTo(new File(uri));
-
-        UserRolesRepository userRolesRepository = new UserRolesRepository(path);
+        storedUsers.add(user);
+        storeToFile(storedUsers);
+        UserRolesRepo userRolesRepository = new UserRolesRepo(path);
         UserRoles userRoles = userRolesRepository.save(new UserRoles(user));
         return userRoles != null ? user : null;
     }
 
-    public Optional<User> save(String oldUserName, User newUser) {
-        Assert.notNull(newUser, "Entity must not be null.");
-        Assert.notNull(oldUserName, "Entity must not be null.");
-
-        try (OutputStream output = new FileOutputStream(tmpUri)) {
-            List<User> storedUsers = findAll();
-
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
-            Properties prop = new Properties();
-            for (User storedUser : storedUsers) {
-                if (oldUserName.equals(storedUser.getName())) {
-                    if (newUser.getEncodedPassword() == null) {
-                        newUser.setEncodedPassword(storedUser.getEncodedPassword());
-                    }
-                    String value = mapper.writeValueAsString(newUser);
-                    prop.setProperty(newUser.getName(), value);
-                } else {
-                    String value = mapper.writeValueAsString(storedUser);
-                    prop.setProperty(storedUser.getName(), value);
-                }
-            }
-            prop.store(output, null);
-        } catch (IOException io) {
-            logger.error(io.getMessage());
-            return Optional.empty();
-        }
-        File tmpfile = new File(tmpUri);
-        tmpfile.renameTo(new File(uri));
-
-        UserRoles userRoles = new UserRolesRepository(path)
-                .save(new UserRoles(newUser));
-        return userRoles != null ? Optional.of(newUser) : Optional.empty();
-    }
-
     @Override
     public void deleteById(String userName) {
-        if (findById(userName).isPresent()) {
-
-            try (OutputStream output = new FileOutputStream(tmpUri)) {
-                List<User> storedUsers = findAll();
-
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
-                Properties prop = new Properties();
-                for (User storedUser : storedUsers) {
-                    if (!storedUser.getName().equals(userName)) {
-                        storeToProperties(prop, mapper, storedUser);
-                    }
-                }
-
-                // save properties to project root folder
-                prop.store(output, null);
-            } catch (IOException io) {
-                logger.error(io.getMessage());
-            }
-            File tmpfile = new File(tmpUri);
-            tmpfile.renameTo(new File(uri));
-
+        Optional<User> optUser = findById(userName);
+        if (optUser.isPresent()) {
+            User user = optUser.get();
+            List<User> storedUsers = findAll();
+            storedUsers.remove(user);
+            storeToFile(storedUsers);
         }
-        new UserRolesRepository(path)
+        new UserRolesRepo(path)
                 .deleteById(userName);
     }
-
-    private void storeToProperties(Properties prop, ObjectMapper mapper, User user, User oldUser) throws JsonProcessingException {
-        if (user.getName().equals(oldUser.getName())) {
-            if (user.getEncodedPassword() == null) {
-                user.setEncodedPassword(oldUser.getEncodedPassword());
-            }
-        }
-        storeToProperties(prop, mapper, oldUser);
-    }
-
 }
