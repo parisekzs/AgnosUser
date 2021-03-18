@@ -5,8 +5,10 @@
  */
 package hu.mi.user.properties.model;
 
+import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -16,9 +18,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class RoleDTO {
 
     private String name;
     private boolean permanent;
-    private String description;  
+    private String description;
+    private ArrayList<String> users;
 }

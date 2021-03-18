@@ -12,7 +12,7 @@ import java.util.ArrayList;
  *
  * @author parisek
  */
-public class UserRoles extends AbstractEntity{
+public class UserRoles extends AbstractEntity {
 
     private ArrayList<String> roles;
 

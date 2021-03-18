@@ -6,8 +6,8 @@
 package hu.mi.user.properties.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.Objects;
-import lombok.AllArgsConstructor;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  *
@@ -17,19 +17,23 @@ public class Role extends AbstractEntity {
 
     private boolean permanent;
     private String description;
+    private ArrayList<String> users;
 
     public Role() {
         super();
+        this.users = new ArrayList<>();
     }
 
     public Role(String name) {
         super(name);
+        this.users = new ArrayList<>();
     }    
 
-    public Role( String name, boolean permanent, String description) {
+    public Role( String name, boolean permanent, String description, ArrayList<String> users) {
         super(name);
         this.permanent = permanent;
         this.description = description;
+        this.users = users;
     }
     
     @JsonIgnore
@@ -43,6 +47,26 @@ public class Role extends AbstractEntity {
         this.name = name;
     }
 
+    @JsonIgnore
+    public ArrayList<String> getUsers() {
+        return users;
+    }    
+
+    public void setUsers(ArrayList<String> users) {
+        this.users = users;
+    }
+    
+    public void addUser(String userName) {
+        if (!this.users.contains(userName)) {
+            this.users.add(userName);
+        }
+        Collections.sort(this.users);
+    }
+    
+    public boolean hasUser(String userName) {
+        return this.users.contains(userName);
+    }    
+    
     public boolean isPermanent() {
         return permanent;
     }

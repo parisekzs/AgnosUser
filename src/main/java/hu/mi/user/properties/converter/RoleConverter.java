@@ -21,7 +21,8 @@ public class RoleConverter {
         return new Role(
                 role.getName(),
                 role.isPermanent(),
-                role.getDescription()
+                role.getDescription(),
+                role.getUsers()
         );
     }
 
@@ -34,7 +35,8 @@ public class RoleConverter {
                 Role daoRole = new Role(
                         role.getName(),
                         role.isPermanent(),
-                        role.getDescription()
+                        role.getDescription(),
+                        role.getUsers()
                 );
                 result.add(daoRole);
             }
@@ -49,7 +51,8 @@ public class RoleConverter {
             RoleDTO dtoRole = new RoleDTO(
                     role.getName(),
                     role.isPermanent(),
-                    role.getDescription()
+                    role.getDescription(),
+                    role.getUsers()
             );
             return Optional.ofNullable(dtoRole);
         }
@@ -63,7 +66,8 @@ public class RoleConverter {
             RoleDTO dtoRole = new RoleDTO(
                     role.getName(),
                     role.isPermanent(),
-                    role.getDescription()
+                    role.getDescription(),
+                    role.getUsers()
             );
             return Optional.ofNullable(dtoRole);
         }
@@ -78,7 +82,8 @@ public class RoleConverter {
                 RoleDTO dtoRole = new RoleDTO(
                         role.getName(),
                         role.isPermanent(),
-                        role.getDescription()
+                        role.getDescription(),
+                        role.getUsers()
                 );
                 result.add(dtoRole);
             }

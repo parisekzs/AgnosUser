@@ -144,7 +144,6 @@ public abstract class AbstractPropertyRepo<T extends AbstractEntity, ID extends 
         storedEntities.add(entity);
         storeToFile(storedEntities);
         return entity;
-
     }
 
     @Override

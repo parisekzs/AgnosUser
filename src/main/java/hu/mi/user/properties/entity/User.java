@@ -8,7 +8,6 @@ package hu.mi.user.properties.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Objects;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
@@ -123,7 +122,6 @@ public class User extends AbstractEntity {
     public void setRealName(String realName) {
         this.realName = realName;
     }
-
 
     @Override
     public String toString() {
