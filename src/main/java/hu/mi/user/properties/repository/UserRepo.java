@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hu.mi.user.properties.entity.Role;
 import hu.mi.user.properties.entity.User;
 import hu.mi.user.properties.entity.UserRoles;
 import java.io.FileInputStream;
@@ -28,7 +29,7 @@ import org.springframework.util.Assert;
  *
  * @author parisek
  */
-public class UserRepo extends AbstractRepo<User, String> {
+public class UserRepo extends AbstractPropertyRepo<User, String> {
 
     public UserRepo(String path) {
         super(User.class, path);
@@ -37,10 +38,10 @@ public class UserRepo extends AbstractRepo<User, String> {
     @PostConstruct
     @Override
     protected void init() {
-
         this.uri = new StringBuilder(this.path)
                 .append("application-users.properties")
                 .toString();
+        //TODO: kell-e?
         super.uri = new StringBuilder(this.path)
                 .append("application-users.properties")
                 .toString();
@@ -97,43 +98,29 @@ public class UserRepo extends AbstractRepo<User, String> {
         }
     }
 
-    private void storeToProperties(Properties prop, ObjectMapper mapper, User user, User oldUser) throws JsonProcessingException {
-        if (user.getName().equals(oldUser.getName())) {
-            if (user.getEncodedPassword() == null) {
-                user.setEncodedPassword(oldUser.getEncodedPassword());
-            }
-        }
-        storeToProperties(prop, mapper, oldUser);
-    }
-
-    private void storeToProperties(Properties prop, ObjectMapper mapper, User user) throws JsonProcessingException {
-        String value = mapper.writeValueAsString(user);
-        prop.setProperty(user.getName(), value);
-
-    }
-
     @Override
     public User save(User user) {
         Assert.notNull(user, "Entity must not be null!");
-        List<User> oldUsers = findAll();
 
         try (OutputStream output = new FileOutputStream(uri)) {
+            List<User> storedUsers = findAll();
+
             ObjectMapper mapper = new ObjectMapper();
             mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
             boolean hasUser = false;
             Properties prop = new Properties();
             //copy all property to new file
-            for (User oldUser : oldUsers) {
-                if (user.getName().equals(oldUser.getName())) {
+            for (User storedUser : storedUsers) {
+                if (user.getName().equals(storedUser.getName())) {
                     hasUser = true;
                 }
-                storeToProperties(prop, mapper, user, oldUser);
+                storeToProperties(prop, mapper, user, storedUser);
             }
             //if there is no such entity yet
             if (!hasUser) {
                 storeToProperties(prop, mapper, user);
             }
-            
+
             prop.store(output, null);
         } catch (IOException io) {
             logger.error(io.getMessage());
@@ -148,28 +135,25 @@ public class UserRepo extends AbstractRepo<User, String> {
         Assert.notNull(newUser, "Entity must not be null.");
         Assert.notNull(oldUserName, "Entity must not be null.");
 
-        List<User> oldUsers = findAll();
-
         try (OutputStream output = new FileOutputStream(uri)) {
+            List<User> storedUsers = findAll();
+
             ObjectMapper mapper = new ObjectMapper();
             mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
             Properties prop = new Properties();
-            for (User oldUser : oldUsers) {
-                if (oldUserName.equals(oldUser.getName())) {
+            for (User storedUser : storedUsers) {
+                if (oldUserName.equals(storedUser.getName())) {
                     if (newUser.getEncodedPassword() == null) {
-                        newUser.setEncodedPassword(oldUser.getEncodedPassword());
+                        newUser.setEncodedPassword(storedUser.getEncodedPassword());
                     }
                     String value = mapper.writeValueAsString(newUser);
                     prop.setProperty(newUser.getName(), value);
                 } else {
-                    String value = mapper.writeValueAsString(oldUser);
-                    prop.setProperty(oldUser.getName(), value);
+                    String value = mapper.writeValueAsString(storedUser);
+                    prop.setProperty(storedUser.getName(), value);
                 }
             }
-            // set the properties value
-
-            // save properties to project root folder
             prop.store(output, null);
         } catch (IOException io) {
             logger.error(io.getMessage());
@@ -177,19 +161,25 @@ public class UserRepo extends AbstractRepo<User, String> {
         }
         UserRoles userRoles = new UserRolesRepository(path)
                 .save(new UserRoles(newUser));
-        return userRoles != null ? Optional.of(newUser) : Optional.empty(); 
+        return userRoles != null ? Optional.of(newUser) : Optional.empty();
     }
 
     @Override
     public void deleteById(String userName) {
-        Optional<User> deleted = findById(userName);
+        if (findById(userName).isPresent()) {
 
-        if (deleted.isPresent()) {
             try (OutputStream output = new FileOutputStream(uri)) {
+                List<User> storedUsers = findAll();
+
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
                 Properties prop = new Properties();
-                // set the properties value
-                prop.remove(userName);
+                for (User storedUser : storedUsers) {
+                    if (!storedUser.getName().equals(userName)) {
+                        storeToProperties(prop, mapper, storedUser);
+                    }
+                }
 
                 // save properties to project root folder
                 prop.store(output, null);
@@ -200,4 +190,14 @@ public class UserRepo extends AbstractRepo<User, String> {
         new UserRolesRepository(path)
                 .deleteById(userName);
     }
+
+    private void storeToProperties(Properties prop, ObjectMapper mapper, User user, User oldUser) throws JsonProcessingException {
+        if (user.getName().equals(oldUser.getName())) {
+            if (user.getEncodedPassword() == null) {
+                user.setEncodedPassword(oldUser.getEncodedPassword());
+            }
+        }
+        storeToProperties(prop, mapper, oldUser);
+    }
+
 }

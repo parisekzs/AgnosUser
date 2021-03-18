@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
  *
  * @author parisek
  */
-public class UserRolesRepository extends AbstractRepo<UserRoles, String> {
+public class UserRolesRepository extends AbstractPropertyRepo<UserRoles, String> {
 
     public UserRolesRepository(String path) {
         super(UserRoles.class, path);
@@ -23,7 +23,6 @@ public class UserRolesRepository extends AbstractRepo<UserRoles, String> {
     @PostConstruct
     @Override
     protected void init() {
-//        super.uri 
         this.uri = new StringBuilder(this.path)
                 .append("application-users-roles.properties")
                 .toString();

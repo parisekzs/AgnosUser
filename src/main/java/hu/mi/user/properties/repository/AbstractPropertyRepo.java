@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.util.Assert;
 
-public abstract class AbstractRepo<T extends AbstractEntity, ID extends String> implements CrudRepository<T, ID> {
+public abstract class AbstractPropertyRepo<T extends AbstractEntity, ID extends String> implements CrudRepository<T, ID> {
 
     protected static final String ID_MUST_NOT_BE_NULL = "The given id must not be null!";
     protected final Logger logger;
@@ -37,7 +37,7 @@ public abstract class AbstractRepo<T extends AbstractEntity, ID extends String> 
 
     private Class<T> entityClass;
 
-    public AbstractRepo(Class<T> entityClass, String path) {
+    public AbstractPropertyRepo(Class<T> entityClass, String path) {
         this.entityClass = entityClass;
         logger = LoggerFactory.getLogger(entityClass);
         this.path = new StringBuilder(path)
@@ -51,15 +51,20 @@ public abstract class AbstractRepo<T extends AbstractEntity, ID extends String> 
 
     @Override
     public void deleteById(ID id) {
-        Optional<T> deleted = findById(id);
+        if (findById(id).isPresent()) {
+            String huntedId = (String) id;
+            List<T> oldEntities = findAll();
 
-        if (deleted.isPresent()) {
             try (OutputStream output = new FileOutputStream(uri)) {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
                 Properties prop = new Properties();
-                // set the properties value
-                prop.remove((String) id);
-
+                for (T oldEntity : oldEntities) {
+                    if (! oldEntity.getName().equals(huntedId)) {
+                        storeToProperties(prop, mapper, oldEntity);
+                    }
+                }
                 // save properties to project root folder
                 prop.store(output, null);
             } catch (IOException io) {
@@ -82,7 +87,7 @@ public abstract class AbstractRepo<T extends AbstractEntity, ID extends String> 
 
     @Override
     public void deleteAll() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported!");
     }
 
     @Override
@@ -137,12 +142,6 @@ public abstract class AbstractRepo<T extends AbstractEntity, ID extends String> 
         return result;
     }
 
-    private void storeToProperties(Properties prop, ObjectMapper mapper, T entity) throws JsonProcessingException {
-        String value = mapper.writeValueAsString(entity);
-        prop.setProperty(entity.getName(), value);
-
-    }
-
     @Override
     public <S extends T> S save(S entity) {
 
@@ -167,7 +166,7 @@ public abstract class AbstractRepo<T extends AbstractEntity, ID extends String> 
             if (!hasEntity) {
                 storeToProperties(prop, mapper, entity);
             }
-            
+
             prop.store(output, null);
 
             return entity;
@@ -190,6 +189,16 @@ public abstract class AbstractRepo<T extends AbstractEntity, ID extends String> 
         return result;
     }
 
+    @Override
+    public boolean existsById(ID id) {
+        return this.findById(id).isPresent();
+    }
+
+    @Override
+    public long count() {
+        return this.findAll().size();
+    }
+
     protected T parseEntityFromJSONString(String key, String value) {
         T result = null;
         try {
@@ -205,14 +214,10 @@ public abstract class AbstractRepo<T extends AbstractEntity, ID extends String> 
         return result;
     }
 
-    @Override
-    public boolean existsById(ID id) {
-        return this.findById(id).isPresent();
-    }
+    protected void storeToProperties(Properties prop, ObjectMapper mapper, T entity) throws JsonProcessingException {
+        String value = mapper.writeValueAsString(entity);
+        prop.setProperty(entity.getName(), value);
 
-    @Override
-    public long count() {
-        return this.findAll().size();
     }
 
 }
