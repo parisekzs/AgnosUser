@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.mi.user.properties.entity.Role;
 import hu.mi.user.properties.entity.User;
 import hu.mi.user.properties.entity.UserRoles;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,6 +41,9 @@ public class UserRepo extends AbstractPropertyRepo<User, String> {
     protected void init() {
         this.uri = new StringBuilder(this.path)
                 .append("auth/application-users.properties")
+                .toString();
+        this.tmpUri = new StringBuilder(this.path)
+                .append("auth/tmp-application-users.properties")
                 .toString();
         //TODO: kell-e?
         super.uri = new StringBuilder(this.path)
@@ -101,8 +105,7 @@ public class UserRepo extends AbstractPropertyRepo<User, String> {
     @Override
     public User save(User user) {
         Assert.notNull(user, "Entity must not be null!");
-
-        try (OutputStream output = new FileOutputStream(uri)) {
+        try (OutputStream output = new FileOutputStream(tmpUri)) {
             List<User> storedUsers = findAll();
 
             ObjectMapper mapper = new ObjectMapper();
@@ -126,6 +129,9 @@ public class UserRepo extends AbstractPropertyRepo<User, String> {
             logger.error(io.getMessage());
             return null;
         }
+        File tmpfile = new File(tmpUri);
+        tmpfile.renameTo(new File(uri));
+
         UserRolesRepository userRolesRepository = new UserRolesRepository(path);
         UserRoles userRoles = userRolesRepository.save(new UserRoles(user));
         return userRoles != null ? user : null;
@@ -135,7 +141,7 @@ public class UserRepo extends AbstractPropertyRepo<User, String> {
         Assert.notNull(newUser, "Entity must not be null.");
         Assert.notNull(oldUserName, "Entity must not be null.");
 
-        try (OutputStream output = new FileOutputStream(uri)) {
+        try (OutputStream output = new FileOutputStream(tmpUri)) {
             List<User> storedUsers = findAll();
 
             ObjectMapper mapper = new ObjectMapper();
@@ -159,6 +165,9 @@ public class UserRepo extends AbstractPropertyRepo<User, String> {
             logger.error(io.getMessage());
             return Optional.empty();
         }
+        File tmpfile = new File(tmpUri);
+        tmpfile.renameTo(new File(uri));
+
         UserRoles userRoles = new UserRolesRepository(path)
                 .save(new UserRoles(newUser));
         return userRoles != null ? Optional.of(newUser) : Optional.empty();
@@ -168,7 +177,7 @@ public class UserRepo extends AbstractPropertyRepo<User, String> {
     public void deleteById(String userName) {
         if (findById(userName).isPresent()) {
 
-            try (OutputStream output = new FileOutputStream(uri)) {
+            try (OutputStream output = new FileOutputStream(tmpUri)) {
                 List<User> storedUsers = findAll();
 
                 ObjectMapper mapper = new ObjectMapper();
@@ -186,6 +195,9 @@ public class UserRepo extends AbstractPropertyRepo<User, String> {
             } catch (IOException io) {
                 logger.error(io.getMessage());
             }
+            File tmpfile = new File(tmpUri);
+            tmpfile.renameTo(new File(uri));
+
         }
         new UserRolesRepository(path)
                 .deleteById(userName);

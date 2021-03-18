@@ -26,6 +26,10 @@ public class UserRolesRepository extends AbstractPropertyRepo<UserRoles, String>
         this.uri = new StringBuilder(this.path)
                 .append("auth/application-users-roles.properties")
                 .toString();
+        this.tmpUri = new StringBuilder(this.path)
+                .append("auth/tmp-application-users-roles.properties")
+                .toString();
+
     }
 
     public List<UserRoles> findAllByRoleName(String roleName) {

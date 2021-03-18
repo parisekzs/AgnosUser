@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.mi.user.properties.entity.Role;
 import hu.mi.user.properties.entity.UserRoles;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -33,12 +34,16 @@ public class RoleRepo extends AbstractPropertyRepo<Role, String> {
         this.uri = new StringBuilder(this.path)
                 .append("auth/application-roles.properties")
                 .toString();
+        this.tmpUri = new StringBuilder(this.path)
+                .append("auth/tmp-application-roles.properties")
+                .toString();
+
     }
 
     @Override
     public void deleteById(String roleName) {
         if (findById(roleName).isPresent()) {
-            try (OutputStream output = new FileOutputStream(uri)) {
+            try (OutputStream output = new FileOutputStream(tmpUri)) {
                 List<Role> storedRoles = findAll();
 
                 ObjectMapper mapper = new ObjectMapper();
@@ -54,6 +59,8 @@ public class RoleRepo extends AbstractPropertyRepo<Role, String> {
             } catch (IOException io) {
                 logger.error(io.getMessage());
             }
+            File tmpfile = new File(tmpUri);
+            tmpfile.renameTo(new File(uri));
 
             UserRolesRepository userRolesRepository = new UserRolesRepository(this.path);
             for (UserRoles userRoles : userRolesRepository.findAllByRoleName(roleName)) {

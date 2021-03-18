@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.mi.user.properties.entity.AbstractEntity;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,6 +34,8 @@ public abstract class AbstractPropertyRepo<T extends AbstractEntity, ID extends 
     protected final Logger logger;
 
     protected String uri;
+    protected String tmpUri;
+
     protected final String path;
 
     private Class<T> entityClass;
@@ -55,13 +58,13 @@ public abstract class AbstractPropertyRepo<T extends AbstractEntity, ID extends 
             String huntedId = (String) id;
             List<T> oldEntities = findAll();
 
-            try (OutputStream output = new FileOutputStream(uri)) {
+            try (OutputStream output = new FileOutputStream(tmpUri)) {
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
                 Properties prop = new Properties();
                 for (T oldEntity : oldEntities) {
-                    if (! oldEntity.getName().equals(huntedId)) {
+                    if (!oldEntity.getName().equals(huntedId)) {
                         storeToProperties(prop, mapper, oldEntity);
                     }
                 }
@@ -70,6 +73,8 @@ public abstract class AbstractPropertyRepo<T extends AbstractEntity, ID extends 
             } catch (IOException io) {
                 logger.error(io.getMessage());
             }
+            File tmpfile = new File(tmpUri);
+            tmpfile.renameTo(new File(uri));
         }
     }
 
@@ -147,7 +152,7 @@ public abstract class AbstractPropertyRepo<T extends AbstractEntity, ID extends 
 
         Assert.notNull(entity, "Entity must not be null.");
         List<T> oldEntities = findAll();
-        try (OutputStream output = new FileOutputStream(uri)) {
+        try (OutputStream output = new FileOutputStream(tmpUri)) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
@@ -168,6 +173,9 @@ public abstract class AbstractPropertyRepo<T extends AbstractEntity, ID extends 
             }
 
             prop.store(output, null);
+
+            File tmpfile = new File(tmpUri);
+            tmpfile.renameTo(new File(uri));
 
             return entity;
         } catch (IOException io) {
