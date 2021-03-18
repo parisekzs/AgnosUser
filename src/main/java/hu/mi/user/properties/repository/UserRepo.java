@@ -5,19 +5,11 @@
  */
 package hu.mi.user.properties.repository;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import hu.mi.user.properties.entity.Role;
 import hu.mi.user.properties.entity.User;
 import hu.mi.user.properties.entity.UserRoles;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +25,7 @@ import org.springframework.util.Assert;
 public class UserRepo extends AbstractPropertyRepo<User, String> {
 
     public UserRepo(String path) {
-        super(User.class, path);
+        super(User.class, path);        
     }
 
     @PostConstruct

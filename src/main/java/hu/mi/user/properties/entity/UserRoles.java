@@ -14,13 +14,11 @@ import java.util.ArrayList;
  */
 public class UserRoles extends AbstractEntity{
 
-    private String name;
     private ArrayList<String> roles;
 
     public UserRoles() {
     }
 
-    
     public UserRoles(User user) {
         this.roles = user.getRoles();
         this.name = user.getName();
@@ -50,5 +48,4 @@ public class UserRoles extends AbstractEntity{
         return "AgnosUserRoles{" + "name=" + name + ", roles=" + roles + '}';
     }
 
-    
 }
