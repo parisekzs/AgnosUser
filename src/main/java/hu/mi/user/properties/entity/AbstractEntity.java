@@ -12,7 +12,14 @@ import java.util.Objects;
  * @author parisek
  */
 public abstract class AbstractEntity {
-    private String name;
+    protected String name;
+
+    public AbstractEntity() {
+    }
+
+    public AbstractEntity(String name) {
+        this.name = name;
+    }
     
     public abstract void setName(String name);
     public abstract String getName();

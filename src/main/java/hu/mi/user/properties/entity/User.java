@@ -17,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  */
 public class User extends AbstractEntity {
 
-    private String name;
     private String email;
     private String realName;
     private String encodedPassword;
@@ -29,7 +28,7 @@ public class User extends AbstractEntity {
     }
 
     public User(String name, String email, String realName, ArrayList<String> roles, boolean permanent) {
-        this.name = name;
+        super(name);
         this.email = email;
         this.realName = realName;
         this.roles = roles;
@@ -125,29 +124,6 @@ public class User extends AbstractEntity {
         this.realName = realName;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final User other = (User) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {

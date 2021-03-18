@@ -13,20 +13,25 @@ import lombok.AllArgsConstructor;
  *
  * @author parisek
  */
-@AllArgsConstructor
 public class Role extends AbstractEntity {
 
-    private String name;
     private boolean permanent;
     private String description;
 
     public Role() {
+        super();
     }
 
     public Role(String name) {
-        this.name = name;
-    }
+        super(name);
+    }    
 
+    public Role( String name, boolean permanent, String description) {
+        super(name);
+        this.permanent = permanent;
+        this.description = description;
+    }
+    
     @JsonIgnore
     @Override
     public String getName() {
@@ -54,30 +59,7 @@ public class Role extends AbstractEntity {
         this.description = description;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Role other = (Role) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        return true;
-    }
-
+ 
     @Override
     public String toString() {
         return "AgnosRole{" + "name=" + name + ", permanent=" + permanent + ", description=" + description + '}';
