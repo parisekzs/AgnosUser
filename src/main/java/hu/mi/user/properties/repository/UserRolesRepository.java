@@ -24,7 +24,7 @@ public class UserRolesRepository extends AbstractPropertyRepo<UserRoles, String>
     @Override
     protected void init() {
         this.uri = new StringBuilder(this.path)
-                .append("application-users-roles.properties")
+                .append("auth/application-users-roles.properties")
                 .toString();
     }
 

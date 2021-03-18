@@ -31,7 +31,7 @@ public class RoleRepo extends AbstractPropertyRepo<Role, String> {
     @Override
     protected void init() {
         this.uri = new StringBuilder(this.path)
-                .append("application-roles.properties")
+                .append("auth/application-roles.properties")
                 .toString();
     }
 

@@ -39,11 +39,11 @@ public class UserRepo extends AbstractPropertyRepo<User, String> {
     @Override
     protected void init() {
         this.uri = new StringBuilder(this.path)
-                .append("application-users.properties")
+                .append("auth/application-users.properties")
                 .toString();
         //TODO: kell-e?
         super.uri = new StringBuilder(this.path)
-                .append("application-users.properties")
+                .append("auth/application-users.properties")
                 .toString();
     }
 
