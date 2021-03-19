@@ -36,7 +36,7 @@ public class UserRolesRepo extends AbstractPropertyRepo<UserRoles, String> {
 
     }
 
-    public UserRoles save(Role role) {
+    public boolean save(Role role) {
         Assert.notNull(role, "Role must not be null.");
         List<UserRoles> storedEntities = findAll();
         for (String userName : role.getUsers()) {
@@ -55,7 +55,7 @@ public class UserRolesRepo extends AbstractPropertyRepo<UserRoles, String> {
             }
         }
         storeToFile(storedEntities);
-        return null;
+        return true;
     }    
     
     public List<UserRoles> findAllByRoleName(String roleName) {

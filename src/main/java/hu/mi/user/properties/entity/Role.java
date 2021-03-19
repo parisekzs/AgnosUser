@@ -8,6 +8,7 @@ package hu.mi.user.properties.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -17,7 +18,7 @@ public class Role extends AbstractEntity {
 
     private boolean permanent;
     private String description;
-    private ArrayList<String> users;
+    private List<String> users;
 
     public Role() {
         super();
@@ -29,7 +30,7 @@ public class Role extends AbstractEntity {
         this.users = new ArrayList<>();
     }    
 
-    public Role( String name, boolean permanent, String description, ArrayList<String> users) {
+    public Role( String name, boolean permanent, String description, List<String> users) {
         super(name);
         this.permanent = permanent;
         this.description = description;
@@ -48,11 +49,11 @@ public class Role extends AbstractEntity {
     }
 
     @JsonIgnore
-    public ArrayList<String> getUsers() {
+    public List<String> getUsers() {
         return users;
     }    
 
-    public void setUsers(ArrayList<String> users) {
+    public void setUsers(List<String> users) {
         this.users = users;
     }
     

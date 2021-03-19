@@ -75,9 +75,7 @@ public class RoleRepo extends AbstractPropertyRepo<Role, String> {
         storedRoles.add(role);
         storeToFile(storedRoles);        
         UserRolesRepo userRolesRepository = new UserRolesRepo(path);
-        UserRoles userRoles = userRolesRepository.save(role);
-        return role;
-        //return userRoles != null ? role : null;
+        return userRolesRepository.save(role) ? role : null;
     }   
     
     

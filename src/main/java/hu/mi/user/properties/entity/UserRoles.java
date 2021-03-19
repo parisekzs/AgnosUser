@@ -7,6 +7,7 @@ package hu.mi.user.properties.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -14,7 +15,7 @@ import java.util.ArrayList;
  */
 public class UserRoles extends AbstractEntity {
 
-    private ArrayList<String> roles;
+    private List<String> roles;
 
     public UserRoles() {
     }
@@ -35,7 +36,7 @@ public class UserRoles extends AbstractEntity {
         this.name = name;
     }
 
-    public ArrayList<String> getRoles() {
+    public List<String> getRoles() {
         return roles;
     }
 

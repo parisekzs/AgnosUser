@@ -8,6 +8,7 @@ package hu.mi.user.properties.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
@@ -19,14 +20,14 @@ public class User extends AbstractEntity {
     private String email;
     private String realName;
     private String encodedPassword;
-    private ArrayList<String> roles;
+    private List<String> roles;
     private boolean permanent;
 
     public User() {
         this.roles = new ArrayList<>();
     }
 
-    public User(String name, String email, String realName, ArrayList<String> roles, boolean permanent) {
+    public User(String name, String email, String realName, List<String> roles, boolean permanent) {
         super(name);
         this.email = email;
         this.realName = realName;
@@ -45,7 +46,7 @@ public class User extends AbstractEntity {
         this.name = name;
     }
 
-    public void setRoles(ArrayList<String> roles) {
+    public void setRoles(List<String> roles) {
         this.roles = roles;
     }
 
@@ -92,7 +93,7 @@ public class User extends AbstractEntity {
     }
 
     @JsonIgnore
-    public ArrayList<String> getRoles() {
+    public List<String> getRoles() {
         return roles;
     }
 

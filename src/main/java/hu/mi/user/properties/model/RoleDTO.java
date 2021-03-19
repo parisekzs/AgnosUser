@@ -5,7 +5,7 @@
  */
 package hu.mi.user.properties.model;
 
-import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,5 +24,5 @@ public class RoleDTO {
     private String name;
     private boolean permanent;
     private String description;
-    private ArrayList<String> users;
+    private List<String> users;
 }
