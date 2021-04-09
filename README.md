@@ -1,9 +1,9 @@
 # AgnosUser
 This maven project implements the user repository of the Agnos BI system. It stores user attributes in property files. The path of the directory that contains the properties files must be specified. 
 This directory will contain the following files:
-- application-users.properties: It stores the users' attributes. The keys in this property file are the users' names and the values are  JSON strings that describing the other attributes of the users.
+- application-users.properties: It stores the attributes of users. The keys in this property file are the names of users and the values are JSON strings that describing the other attributes of the users.
 - application-roles.properties: It stores the attributes of the roles. The keys in this property file are the names of the roles and the values are JSON strings that describing the other attributes of the roles.
-- application-users-roles.properties: It contains the users' roles. The keys in this property file are the users' names and the values are JSON strings that containing a list of roles names belonging to the users.
+- application-users-roles.properties: It contains the roles of users. The keys in this property file are the names of users and the values are JSON strings that containing a list of roles names belonging to the users.
 
 You can have an overview of our class structure with the diagram below:
 
